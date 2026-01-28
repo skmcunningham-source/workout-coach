@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTF Workout Coach</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .input-section {
+            margin-bottom: 20px;
+        }
+        
+        .input-section label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 14px;
+            resize: vertical;
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+        
+        .workout-display {
+            display: none;
+        }
+        
+        .timer-display {
+            text-align: center;
+            margin: 30px 0;
+        }
+        
+        .timer-display .time {
+            font-size: 5em;
+            font-weight: bold;
+            color: #667eea;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .current-exercise {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .current-exercise h2 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        
+        .current-exercise p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #e0e0e0;
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s;
+        }
+        
+        .next-up {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .next-up h3 {
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .spotify-player {
+            margin: 20px 0;
+        }
+        
+        .spotify-player iframe {
+            width: 100%;
+            border-radius: 12px;
+        }
+        
+        .coaching-cue {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            font-style: italic;
+        }
+        
+        .block-info {
+            background: #e7f3ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .workout-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .summary-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .summary-item .label {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+        
+        .summary-item .value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        @media (max-width: 768px) {
+            .timer-display .time {
+                font-size: 3em;
+            }
+            
+            .current-exercise h2 {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔥 OTF Workout Coach</h1>
+            <p>Your personal Orangetheory trainer</p>
+        </div>
+        
+        <div class="card" id="setupCard">
+            <div class="input-section">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <label for="workoutInput" style="margin: 0;">Paste Today's Workout from Reddit:</label>
+                    <button class="btn-secondary" onclick="clearWorkout()" style="padding: 8px 16px;">🗑️ Clear</button>
+                </div>
+                <textarea id="workoutInput" placeholder="Paste the workout details here..."></textarea>
+            </div>
+            
+            <div class="input-section">
+                <label for="spotifyInput">Spotify Playlist URL (optional):</label>
+                <input type="text" id="spotifyInput" placeholder="https://open.spotify.com/playlist/...">
+                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                    <button class="btn-secondary" onclick="saveDefaultPlaylist()" style="flex: 1;">💾 Save as Default</button>
+                    <button class="btn-secondary" onclick="clearDefaultPlaylist()" style="flex: 1;">🗑️ Clear Default</button>
+                </div>
+                <p style="color: #666; font-size: 0.9em; margin-top: 5px;">
+                    Paste your Spotify playlist URL to play music during your workout. Save it as default to auto-load next time!
+                </p>
+            </div>
+            
+            <div class="button-group">
+                <button class="btn-primary" onclick="startWorkout()">Start Workout 💪</button>
+                <button class="btn-secondary" onclick="loadSampleWorkout()">Load Sample Workout</button>
+                <button class="btn-secondary" onclick="openRedditWorkout()">📱 Open Reddit Workout</button>
+            </div>
+            
+            <div id="loadingStatus" style="margin-top: 15px; padding: 15px; background: #e3f2fd; border-radius: 8px; display: none;">
+                <strong>Tip:</strong> Look for the daily workout post on r/orangetheory, copy the workout details, and paste them in the box above!
+            </div>
+        </div>
+        
+        <div class="card workout-display" id="workoutCard">
+            <div class="spotify-player" id="spotifyPlayer"></div>
+            
+            <div class="workout-summary" id="workoutSummary"></div>
+            
+            <div class="block-info" id="blockInfo"></div>
+            
+            <div class="current-exercise" id="currentExercise">
+                <h2>Get Ready!</h2>
+                <p>Your workout is about to begin</p>
+            </div>
+            
+            <div class="timer-display">
+                <div class="time" id="timerDisplay">0:00</div>
+            </div>
+            
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            
+            <div class="coaching-cue" id="coachingCue">
+                Remember to focus on your form and listen to your body!
+            </div>
+            
+            <div class="next-up" id="nextUp">
+                <h3>Coming Up Next:</h3>
+                <p id="nextExercise">Press Play to start</p>
+            </div>
+            
+            <div class="controls">
+                <button class="btn-primary" onclick="togglePlayPause()" id="playPauseBtn">▶️ Play</button>
+                <button class="btn-secondary" onclick="skipExercise()">⏭️ Skip</button>
+                <button class="btn-secondary" onclick="previousExercise()">⏮️ Previous</button>
+                <button class="btn-secondary" onclick="restartWorkout()">🔄 Restart</button>
+                <button class="btn-secondary" onclick="endWorkout()">🏁 End Workout</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let workout = [];
+        let currentIndex = 0;
+        let timer = null;
+        let timeRemaining = 0;
+        let isPaused = false;
+        let totalWorkoutTime = 0;
+        let completedTime = 0;
+        
+        // Load default Spotify playlist on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedPlaylist = localStorage.getItem('otf_default_playlist');
+            if (savedPlaylist) {
+                document.getElementById('spotifyInput').value = savedPlaylist;
+            }
+        });
+        
+        const coachingCues = {
+            push: [
+                "Push yourself! This is where the magic happens!",
+                "You've got this! Maintain that intensity!",
+                "Feel the burn - you're getting stronger!",
+                "This is your push pace - challenging but sustainable!"
+            ],
+            base: [
+                "Good work! Recover at your base pace.",
+                "Breathe and recover. You earned this.",
+                "Base pace - find your sustainable rhythm.",
+                "Great job! Use this time to recover."
+            ],
+            ao: [
+                "ALL OUT! Give it everything you've got!",
+                "This is it! Leave nothing in the tank!",
+                "GO GO GO! Maximum effort!",
+                "Sprint to the finish! You're almost there!"
+            ],
+            wr: [
+                "Walking recovery - catch your breath.",
+                "Great work! Take this time to recover.",
+                "Recovery time - you earned it!",
+                "Breathe deep and recover."
+            ],
+            floor: [
+                "Focus on your form over speed.",
+                "Control the movement - quality over quantity!",
+                "Engage your core throughout this exercise.",
+                "You're crushing it! Keep that good form!"
+            ],
+            row: [
+                "Power through those legs!",
+                "Drive with your legs, pull with your core!",
+                "Strong, powerful strokes!",
+                "Feel the full-body engagement!"
+            ]
+        };
+        
+        function loadSampleWorkout() {
+            const sample = `Tread Block 1 - 11 minutes
+* Goal: maintain your push and increase your base intensity
+* 90 sec push (PW @ 6%+)
+* 3 min base
+* 90 sec push (PW @ 6%+)
+* 2 min base
+* 90 sec push (PW @ 6%+)
+* 1 min base
+* 30 sec AO (PW @ 10%+)
+90 sec WR, get to base when ready
+Tread Block 2 - 11 minutes
+* Goal: maintain or lower your push intensity while maintaining your 1 minute base intensity from block 1
+* 90 sec push (PW @ 6%+)
+* 1 min base
+* 90 sec push (PW @ 6%+)
+* 2 min base
+* 90 sec push (PW @ 6%+)
+* 3 min base
+* Finisher: 30 sec AO (PW @ 10%+)
+90 sec to transition to the floor
+Floor Block - 16.5 minutes
+* 2 rounds work & rest:
+   * 6 - 10 x goblet sit to stand, rest
+   * 6 - 10 x bridge (shoulders on bench), rest
+* 2 rounds work & rest:
+   * 6 - 10 each x bench bird dog low row, rest
+   * 6 - 10 x chest press, rest
+* 2 rounds work & rest:
+   * 6 - 10 total x high plank alt dumbbell tap, rest
+   * 6 - 10 each x half kneeling low to high chop, rest
+* Repeat your favourite exercises until time is called
+90 sec recovery
+Row Block - 5.5 minutes - circuit
+* 10 total x alt arnold press
+* 150m AO row
+* Repeat until finisher: 30 sec AO row`;
+            
+            document.getElementById('workoutInput').value = sample;
+        }
+        
+        function openRedditWorkout() {
+            // Get today's date
+            const today = new Date();
+            const month = today.toLocaleDateString('en-US', { month: 'long' });
+            const day = today.getDate();
+            const year = today.getFullYear();
+            
+            // Open Reddit search for today's workout
+            const searchQuery = `Daily Workout ${month} ${day} ${year}`;
+            const redditUrl = `https://www.reddit.com/r/orangetheory/search/?q=${encodeURIComponent(searchQuery)}&restrict_sr=1&sort=new`;
+            
+            window.open(redditUrl, '_blank');
+            
+            // Show tip
+            const statusDiv = document.getElementById('loadingStatus');
+            statusDiv.style.display = 'block';
+        }
+        
+        function saveDefaultPlaylist() {
+            const playlistUrl = document.getElementById('spotifyInput').value.trim();
+            
+            if (!playlistUrl) {
+                alert('Please enter a Spotify playlist URL first!');
+                return;
+            }
+            
+            if (!playlistUrl.includes('spotify.com')) {
+                alert('Please enter a valid Spotify URL!');
+                return;
+            }
+            
+            localStorage.setItem('otf_default_playlist', playlistUrl);
+            alert('✅ Default playlist saved! It will auto-load next time you open the app.');
+        }
+        
+        function clearDefaultPlaylist() {
+            localStorage.removeItem('otf_default_playlist');
+            document.getElementById('spotifyInput').value = '';
+            alert('🗑️ Default playlist cleared!');
+        }
+        
+        function clearWorkout() {
+            document.getElementById('workoutInput').value = '';
+        }
+        
+        function parseWorkout(text) {
+            const lines = text.split('\n').filter(line => line.trim());
+            const parsed = [];
+            let currentBlock = null;
+            
+            for (let line of lines) {
+                line = line.trim();
+                
+                // Block header
+                if (line.match(/^(Tread|Floor|Row) Block/i)) {
+                    if (currentBlock) {
+                        parsed.push(currentBlock);
+                    }
+                    currentBlock = {
+                        type: line.match(/^(Tread|Floor|Row)/i)[0].toLowerCase(),
+                        name: line,
+                        exercises: []
+                    };
+                }
+                // Exercise line with time
+                else if (line.match(/^\*?\s*\d+/) && currentBlock) {
+                    const timeMatch = line.match(/(\d+(?:\.\d+)?)\s*(sec|min|minutes?|m)/i);
+                    if (timeMatch) {
+                        let seconds = parseFloat(timeMatch[1]);
+                        const unit = timeMatch[2].toLowerCase();
+                        
+                        if (unit.startsWith('min') || unit === 'm') {
+                            seconds *= 60;
+                        }
+                        
+                        // Extract exercise type
+                        let exerciseType = 'work';
+                        if (line.match(/push/i)) exerciseType = 'push';
+                        else if (line.match(/base/i)) exerciseType = 'base';
+                        else if (line.match(/AO|all out/i)) exerciseType = 'ao';
+                        else if (line.match(/WR|walk|recovery/i)) exerciseType = 'wr';
+                        else if (line.match(/row/i)) exerciseType = 'row';
+                        else if (currentBlock.type === 'floor') exerciseType = 'floor';
+                        
+                        currentBlock.exercises.push({
+                            description: line.replace(/^\*\s*/, ''),
+                            duration: seconds,
+                            type: exerciseType
+                        });
+                    } else {
+                        // Exercise without specific time (floor exercises)
+                        currentBlock.exercises.push({
+                            description: line.replace(/^\*\s*/, ''),
+                            duration: 60, // Default 60 seconds for floor exercises
+                            type: 'floor'
+                        });
+                    }
+                }
+                // Transition or note
+                else if (line.match(/transition|recovery|finisher/i) && currentBlock) {
+                    const timeMatch = line.match(/(\d+(?:\.\d+)?)\s*(sec|min)/i);
+                    if (timeMatch) {
+                        let seconds = parseFloat(timeMatch[1]);
+                        const unit = timeMatch[2].toLowerCase();
+                        if (unit.startsWith('min')) seconds *= 60;
+                        
+                        currentBlock.exercises.push({
+                            description: line,
+                            duration: seconds,
+                            type: 'wr'
+                        });
+                    }
+                }
+            }
+            
+            if (currentBlock) {
+                parsed.push(currentBlock);
+            }
+            
+            return parsed;
+        }
+        
+        function startWorkout() {
+            const workoutText = document.getElementById('workoutInput').value;
+            const spotifyUrl = document.getElementById('spotifyInput').value;
+            
+            if (!workoutText.trim()) {
+                alert('Please paste a workout first!');
+                return;
+            }
+            
+            workout = parseWorkout(workoutText);
+            
+            if (workout.length === 0 || !workout.some(b => b.exercises.length > 0)) {
+                alert('Could not parse the workout. Please check the format!');
+                return;
+            }
+            
+            // Flatten all exercises into a single array
+            const allExercises = [];
+            workout.forEach(block => {
+                block.exercises.forEach(ex => {
+                    allExercises.push({
+                        ...ex,
+                        blockName: block.name,
+                        blockType: block.type
+                    });
+                });
+            });
+            
+            workout = allExercises;
+            totalWorkoutTime = workout.reduce((sum, ex) => sum + ex.duration, 0);
+            
+            // Setup Spotify player
+            if (spotifyUrl.trim()) {
+                let embedUrl = spotifyUrl;
+                
+                // Convert regular Spotify URL to embed URL
+                if (spotifyUrl.includes('open.spotify.com') && !spotifyUrl.includes('embed')) {
+                    embedUrl = spotifyUrl.replace('open.spotify.com', 'open.spotify.com/embed');
+                    // Remove any query parameters
+                    embedUrl = embedUrl.split('?')[0];
+                }
+                
+                document.getElementById('spotifyPlayer').innerHTML = `
+                    <iframe src="${embedUrl}" 
+                            width="100%" 
+                            height="152" 
+                            frameborder="0" 
+                            allowtransparency="true" 
+                            allow="encrypted-media">
+                    </iframe>
+                `;
+            }
+            
+            // Create workout summary
+            const treadCount = workout.filter(ex => ex.blockType === 'tread').length;
+            const floorCount = workout.filter(ex => ex.blockType === 'floor').length;
+            const rowCount = workout.filter(ex => ex.blockType === 'row').length;
+            
+            document.getElementById('workoutSummary').innerHTML = `
+                <div class="summary-item">
+                    <div class="label">Total Time</div>
+                    <div class="value">${Math.round(totalWorkoutTime / 60)} min</div>
+                </div>
+                <div class="summary-item">
+                    <div class="label">Tread Exercises</div>
+                    <div class="value">${treadCount}</div>
+                </div>
+                <div class="summary-item">
+                    <div class="label">Floor Exercises</div>
+                    <div class="value">${floorCount}</div>
+                </div>
+                <div class="summary-item">
+                    <div class="label">Row Exercises</div>
+                    <div class="value">${rowCount}</div>
+                </div>
+            `;
+            
+            document.getElementById('setupCard').style.display = 'none';
+            document.getElementById('workoutCard').style.display = 'block';
+            
+            currentIndex = 0;
+            completedTime = 0;
+            loadExercise();
+        }
+        
+        function loadExercise() {
+            if (currentIndex >= workout.length) {
+                finishWorkout();
+                return;
+            }
+            
+            const exercise = workout[currentIndex];
+            timeRemaining = exercise.duration;
+            
+            document.getElementById('blockInfo').innerHTML = `
+                <strong>Block:</strong> ${exercise.blockName}
+            `;
+            
+            document.getElementById('currentExercise').innerHTML = `
+                <h2>${exercise.description}</h2>
+                <p>${formatTime(exercise.duration)}</p>
+            `;
+            
+            // Update next exercise
+            if (currentIndex < workout.length - 1) {
+                const nextEx = workout[currentIndex + 1];
+                document.getElementById('nextExercise').textContent = 
+                    `${nextEx.description} (${formatTime(nextEx.duration)})`;
+            } else {
+                document.getElementById('nextExercise').textContent = 'Last exercise!';
+            }
+            
+            // Get coaching cue
+            const cueCategory = exercise.type || 'floor';
+            const cues = coachingCues[cueCategory] || coachingCues.floor;
+            const randomCue = cues[Math.floor(Math.random() * cues.length)];
+            document.getElementById('coachingCue').textContent = randomCue;
+            
+            updateDisplay();
+        }
+        
+        function togglePlayPause() {
+            isPaused = !isPaused;
+            const btn = document.getElementById('playPauseBtn');
+            
+            if (isPaused) {
+                btn.textContent = '▶️ Resume';
+                if (timer) clearInterval(timer);
+            } else {
+                btn.textContent = '⏸️ Pause';
+                runTimer();
+            }
+        }
+        
+        function runTimer() {
+            if (timer) clearInterval(timer);
+            
+            timer = setInterval(() => {
+                if (!isPaused && timeRemaining > 0) {
+                    timeRemaining--;
+                    completedTime++;
+                    updateDisplay();
+                    
+                    if (timeRemaining === 0) {
+                        currentIndex++;
+                        if (currentIndex < workout.length) {
+                            loadExercise();
+                        } else {
+                            finishWorkout();
+                        }
+                    }
+                }
+            }, 1000);
+        }
+        
+        function updateDisplay() {
+            document.getElementById('timerDisplay').textContent = formatTime(timeRemaining);
+            
+            const progress = (completedTime / totalWorkoutTime) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+        
+        function skipExercise() {
+            if (currentIndex < workout.length - 1) {
+                completedTime += timeRemaining;
+                currentIndex++;
+                loadExercise();
+                if (!isPaused) runTimer();
+            }
+        }
+        
+        function previousExercise() {
+            if (currentIndex > 0) {
+                completedTime -= workout[currentIndex].duration;
+                currentIndex--;
+                loadExercise();
+                if (!isPaused) runTimer();
+            }
+        }
+        
+        function restartWorkout() {
+            if (confirm('Are you sure you want to restart the workout?')) {
+                currentIndex = 0;
+                completedTime = 0;
+                isPaused = false;
+                document.getElementById('playPauseBtn').textContent = '⏸️ Pause';
+                loadExercise();
+                runTimer();
+            }
+        }
+        
+        function endWorkout() {
+            if (confirm('Are you sure you want to end the workout?')) {
+                if (timer) clearInterval(timer);
+                document.getElementById('setupCard').style.display = 'block';
+                document.getElementById('workoutCard').style.display = 'none';
+            }
+        }
+        
+        function finishWorkout() {
+            if (timer) clearInterval(timer);
+            
+            document.getElementById('currentExercise').innerHTML = `
+                <h2>🎉 Workout Complete!</h2>
+                <p>Amazing work! You crushed it!</p>
+            `;
+            
+            document.getElementById('coachingCue').textContent = 
+                'Great job today! Don\'t forget to cool down and stretch!';
+            
+            document.getElementById('playPauseBtn').disabled = true;
+        }
+        
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+    </script>
+</body>
+</html>
