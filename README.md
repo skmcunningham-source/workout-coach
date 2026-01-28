@@ -1,1 +1,1 @@
-# otf-workout-coach
+# workout-coach
