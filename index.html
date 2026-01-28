@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OTF Workout Coach</title>
+    <title>Workout Coach</title>
     <style>
         * {
             margin: 0;
@@ -243,8 +243,8 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🔥 OTF Workout Coach</h1>
-            <p>Your personal Orangetheory trainer</p>
+            <h1>🔥 Workout Coach</h1>
+            <p>Your personal fitness trainer</p>
         </div>
         
         <div class="card" id="setupCard">
@@ -271,11 +271,11 @@
             <div class="button-group">
                 <button class="btn-primary" onclick="startWorkout()">Start Workout 💪</button>
                 <button class="btn-secondary" onclick="loadSampleWorkout()">Load Sample Workout</button>
-                <button class="btn-secondary" onclick="openRedditWorkout()">📱 Open Reddit Workout</button>
+                <button class="btn-secondary" onclick="openRedditWorkout()">📱 Find Today's Workout</button>
             </div>
             
             <div id="loadingStatus" style="margin-top: 15px; padding: 15px; background: #e3f2fd; border-radius: 8px; display: none;">
-                <strong>Tip:</strong> Look for the daily workout post on r/orangetheory, copy the workout details, and paste them in the box above!
+                <strong>Tip:</strong> Look for the daily workout post, copy the workout details, and paste them in the box above!
             </div>
         </div>
         
@@ -329,7 +329,7 @@
         
         // Load default Spotify playlist on page load
         window.addEventListener('DOMContentLoaded', () => {
-            const savedPlaylist = localStorage.getItem('otf_default_playlist');
+            const savedPlaylist = localStorage.getItem('workout_default_playlist');
             if (savedPlaylist) {
                 document.getElementById('spotifyInput').value = savedPlaylist;
             }
@@ -446,12 +446,12 @@ Row Block - 5.5 minutes - circuit
                 return;
             }
             
-            localStorage.setItem('otf_default_playlist', playlistUrl);
+            localStorage.setItem('workout_default_playlist', playlistUrl);
             alert('✅ Default playlist saved! It will auto-load next time you open the app.');
         }
         
         function clearDefaultPlaylist() {
-            localStorage.removeItem('otf_default_playlist');
+            localStorage.removeItem('workout_default_playlist');
             document.getElementById('spotifyInput').value = '';
             alert('🗑️ Default playlist cleared!');
         }
